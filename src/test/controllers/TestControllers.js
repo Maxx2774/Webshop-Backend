@@ -1,6 +1,5 @@
 const supabase = require("../../config/supabase");
-const fs = require("fs");
-// const jsonData = JSON.parse(fs.readFileSync("./src/data/data.json", "utf-8"));
+
 const categories = [
   { id: 1, name: "Frukt" },
   { id: 2, name: "Grönsaker" },
@@ -135,7 +134,7 @@ const products = [
   },
 ];
 
-async function addTestData(req, res) {
+async function addTestData(_, res) {
   try {
     const { error: categoriesError } = await supabase
       .from("categories")
@@ -154,7 +153,7 @@ async function addTestData(req, res) {
   }
 }
 
-async function deleteData(req, res) {
+async function deleteData(_, res) {
   try {
     const { error: productsError } = await supabase
       .from("products")

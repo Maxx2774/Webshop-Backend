@@ -12,21 +12,27 @@ async function addProduct(req, res) {
     name,
     price,
     description,
-    priceUnit,
-    stockQuantity,
-    category,
-    imageUrl,
+    weight,
+    weight_unit,
+    stock_quantity,
+    category_id,
+    image_url,
+    discount,
   } = req.body;
+
+  console.log(req.body);
 
   try {
     const productData = {
       name,
       description,
       price,
-      stock_quantity: stockQuantity,
-      category_id: category,
-      weight_unit: priceUnit,
-      image_url: imageUrl,
+      stock_quantity,
+      category_id,
+      weight,
+      weight_unit,
+      image_url,
+      discount,
     };
     const { error } = await supabase.from("products").insert(productData);
     if (error) {
@@ -37,8 +43,7 @@ async function addProduct(req, res) {
           .json({ error: "En produkt med samma namn finns redan" });
       }
       return res.status(400).json({
-        error: "Det gick inte att lägga till produkt",
-        details: error.message,
+        error: `Det gick inte att lägga till produkt, ${error.message}`,
       });
     }
     return res.status(200).json({ message: `${name} har lagts till` });
@@ -63,6 +68,7 @@ async function updateProduct(req, res) {
   try {
     const updatedProduct = {
       category_id,
+      updated_at: new Date().toISOString(),
     };
 
     if (name !== null) updatedProduct.name = name;
@@ -91,4 +97,93 @@ async function updateProduct(req, res) {
   }
 }
 
-module.exports = { addProduct, updateProduct, checkAdmin };
+async function deleteProduct(req, res) {
+  const { product_id } = req.body;
+  if (!product_id) return res.status(400).json({ error: "Produkt-id saknas" });
+  try {
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", product_id)
+      .single();
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+}
+
+async function addCategory(req, res) {
+  const { name } = req.body;
+  try {
+    const { error } = await supabase.from("categories").insert({ name });
+    if (error) {
+      console.error(error);
+      if (error.code === "23505") {
+        return res.status(409).json({ error: "Kategorin finns redan" });
+      }
+      return res.status(400).json({
+        error: `Det gick inte att lägga till kategorin, ${error.message}`,
+      });
+    }
+    return res.status(201).json({ message: `${name} kategori har lagts till` });
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+}
+
+async function updateCategory(req, res) {
+  const { category_id, name } = req.body;
+  try {
+    if (!category_id || !name) {
+      return res.status(400).json({ error: "Namn eller kategori-id saknas" });
+    }
+
+    const { error } = await supabase
+      .from("categories")
+      .update({ name })
+      .eq("id", category_id)
+      .single();
+    if (error) {
+      if (error.code === "23505") {
+        return res
+          .status(409)
+          .json({ error: "Kategori med samma namn finns redan" });
+      }
+      return res.status(400).json({
+        error: `Det gick inte att uppdatera kategorin, ${error.message}`,
+      });
+    }
+    return res.status(200).json({ message: "Kategorin har uppdaterats" });
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+}
+
+async function deleteCategory(req, res) {
+  const { category_id } = req.body;
+  try {
+    const { error } = await supabase
+      .from("categories")
+      .delete()
+      .eq("id", category_id)
+      .single();
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+    return res.sendStatus(204);
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+}
+
+module.exports = {
+  addProduct,
+  updateProduct,
+  deleteProduct,
+  checkAdmin,
+  addCategory,
+  updateCategory,
+  deleteCategory,
+};

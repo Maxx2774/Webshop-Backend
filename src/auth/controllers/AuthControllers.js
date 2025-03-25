@@ -17,7 +17,9 @@ async function register(req, res) {
       if (error.code === "23505") {
         return res.status(409).json({ error: "Email är redan registrerat" });
       }
-      return res.status(400).json({ message: "Fel vid registrering", error });
+      return res
+        .status(400)
+        .json({ error: `Fel vid registrering, ${error.message}` });
     }
     console.log("användare skapad");
     return res.status(201).json({ message: "Användare registrerad" });
