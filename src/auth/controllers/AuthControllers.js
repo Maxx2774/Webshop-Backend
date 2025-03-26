@@ -38,21 +38,21 @@ async function signIn(req, res) {
       .eq("email", email)
       .single();
 
-    if (error) return res.status(401).json({ error: "Obehörig" });
+    if (error) return res.status(401).json({ error: "Felaktiga uppgifter" });
 
     const validPassword = await bcrypt.compare(password, user.password);
 
-    if (!validPassword) return res.status(401).json({ error: "Obehörig" });
+    if (!validPassword) {
+      return res.status(401).json({ error: "Felaktiga uppgifter" });
+    }
 
     const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     await res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "strict",
+      sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24,
-      path: "/",
-      // domain: "localhost",
     });
 
     return res.status(200).json({
