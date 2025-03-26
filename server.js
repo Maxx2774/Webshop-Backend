@@ -9,8 +9,22 @@ const adminRoutes = require("./src/admin/routes/AdminRoutes");
 const checkoutRoutes = require("./src/checkout/routes/CheckoutRoutes");
 const testRoutes = require("./src/test/routes/TestRoutes");
 app.use(cookieParser());
-app.use(cors({ origin: true, credentials: true }));
+
 app.use(express.json());
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      callback(null, true); // Allow all origins
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Handle preflight requests
+app.options("*", cors());
 
 app.get("/", (req, res) => {
   res.json({ message: "Success" });
