@@ -60,6 +60,7 @@ async function signIn(req, res) {
       user: { id: user.id, email: user.email, admin: user.admin },
     });
   } catch (error) {
+    console.error(error);
     return res.status(500).json({ error: "Server fel" });
   }
 }
