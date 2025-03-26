@@ -37,4 +37,9 @@ async function getCartItems(req, res) {
   }
 }
 
+async function placeOrder() {
+  try {
+  } catch (error) {}
+}
+
 module.exports = { getCartItems };
