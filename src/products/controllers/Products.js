@@ -9,9 +9,26 @@ async function getProducts(_, res) {
       return res
         .status(400)
         .json({ message: "Gick inte att hämta produkter ", error });
-    return res.status(200).json({ products });
+    return res.status(200).json(products);
   } catch (error) {
     return res.status(500).json({ error: "Server fel" });
+  }
+}
+
+async function getProductById(req, res) {
+  const { productId } = req.params;
+
+  try {
+    const { data: product, error } = await supabase
+      .from("products")
+      .select("*")
+      .eq("id", productId)
+      .single();
+    if (error) return res.sendStatus(404);
+
+    return res.status(200).json(product);
+  } catch (error) {
+    return res.sendStatus(500);
   }
 }
 
@@ -25,10 +42,10 @@ async function getCategories(_, res) {
         .status(400)
         .json({ message: "Fel vid hämtning av produktkategorier", error });
     }
-    return res.status(200).json({ categories });
+    return res.status(200).json(categories);
   } catch (error) {
     return res.sendStatus(500);
   }
 }
 
-module.exports = { getProducts, getCategories };
+module.exports = { getProducts, getCategories, getProductById };

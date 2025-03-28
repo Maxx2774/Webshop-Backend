@@ -30,6 +30,8 @@ async function register(req, res) {
 
 async function signIn(req, res) {
   const { email, password } = req.body;
+  console.log(req.headers["user-agent"]);
+  console.log(req.headers["x-forwarded-for"]);
 
   try {
     const { data: user, error } = await supabase
@@ -65,7 +67,7 @@ async function signIn(req, res) {
   }
 }
 
-async function signOut(req, res) {
+async function signOut(_, res) {
   try {
     res.clearCookie("token", {
       httpOnly: true,
@@ -109,7 +111,7 @@ async function verifyToken(req, res) {
       res.clearCookie("token");
       return res.status(401).json({ valid: false });
     }
-    res.json({
+    return res.status(200).json({
       valid: true,
       user: {
         id: user.id,
