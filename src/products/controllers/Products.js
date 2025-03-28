@@ -1,17 +1,22 @@
 const supabase = require("../../config/supabase");
 
-async function getProducts(_, res) {
+async function getProducts(req, res) {
   try {
-    const { data: products, error } = await supabase
-      .from("products")
-      .select("*, categories(name)");
-    if (error)
-      return res
-        .status(400)
-        .json({ message: "Gick inte att hämta produkter ", error });
+    const { category_id } = req.query;
+    const supaQuery = supabase.from("products").select("*, categories(name)");
+
+    if (category_id) {
+      const categoryIds = category_id.split(",");
+      supaQuery.in("category_id", categoryIds);
+    }
+    const { data: products, error } = await supaQuery;
+
+    if (error) throw error;
+    if (!products?.length) return res.sendStatus(404);
     return res.status(200).json(products);
   } catch (error) {
-    return res.status(500).json({ error: "Server fel" });
+    console.log(error);
+    return res.sendStatus(500);
   }
 }
 
@@ -48,4 +53,8 @@ async function getCategories(_, res) {
   }
 }
 
-module.exports = { getProducts, getCategories, getProductById };
+module.exports = {
+  getProducts,
+  getCategories,
+  getProductById,
+};
