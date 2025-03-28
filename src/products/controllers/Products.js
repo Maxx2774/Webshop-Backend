@@ -2,12 +2,15 @@ const supabase = require("../../config/supabase");
 
 async function getProducts(req, res) {
   try {
-    const { category_id } = req.query;
+    const { category_id, search } = req.query;
     const supaQuery = supabase.from("products").select("*, categories(name)");
 
     if (category_id) {
       const categoryIds = category_id.split(",");
       supaQuery.in("category_id", categoryIds);
+    }
+    if (search) {
+      supaQuery.ilike("name", `%${search}%`);
     }
     const { data: products, error } = await supaQuery;
 
@@ -21,9 +24,8 @@ async function getProducts(req, res) {
 }
 
 async function getProductById(req, res) {
-  const { productId } = req.params;
-
   try {
+    const { productId } = req.params;
     const { data: product, error } = await supabase
       .from("products")
       .select("*")
