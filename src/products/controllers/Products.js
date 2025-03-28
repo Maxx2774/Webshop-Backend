@@ -3,7 +3,10 @@ const supabase = require("../../config/supabase");
 async function getProducts(req, res) {
   try {
     const { category_id, search } = req.query;
-    const supaQuery = supabase.from("products").select("*, categories(name)");
+    const supaQuery = supabase
+      .from("products")
+      .select("*, categories(name, slug)")
+      .eq("active", true);
 
     if (category_id) {
       const categoryIds = category_id.split(",");
@@ -28,8 +31,9 @@ async function getProductById(req, res) {
     const { productId } = req.params;
     const { data: product, error } = await supabase
       .from("products")
-      .select("*")
+      .select("*, categories(name, slug)")
       .eq("id", productId)
+      .eq("active", true)
       .single();
     if (error) return res.sendStatus(404);
 
