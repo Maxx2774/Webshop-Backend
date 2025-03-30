@@ -13,7 +13,7 @@ async function getProducts(req, res) {
       supaQuery.in("category_id", categoryIds);
     }
     if (search) {
-      supaQuery.ilike("name", `%${search}%`);
+      supaQuery.ilike("name", `%${search.trim()}%`);
     }
     const { data: products, error } = await supaQuery;
 
