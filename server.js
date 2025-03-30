@@ -8,6 +8,7 @@ const productRoutes = require("./src/products/routes/ProductRoutes");
 const adminRoutes = require("./src/admin/routes/AdminRoutes");
 const checkoutRoutes = require("./src/checkout/routes/CheckoutRoutes");
 const testRoutes = require("./src/test/routes/TestRoutes");
+const userRoutes = require("./src/users/routes/UserRoutes");
 app.use(cookieParser());
 
 app.use(express.json());
@@ -39,6 +40,7 @@ app.use(productRoutes);
 app.use(adminRoutes);
 app.use(checkoutRoutes);
 app.use(testRoutes);
+app.use(userRoutes);
 
 app.listen(3000);
 
