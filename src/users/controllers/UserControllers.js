@@ -1,11 +1,11 @@
 const supabase = require("../../config/supabase");
 
-async function getUsers(req, res) {
+async function getUsers(_, res) {
   try {
     // Allt i Users tabellen hämtas förutom lösenordet
     const { data: users, error } = await supabase
       .from("users")
-      .select("id, email, created_at, updated_at, admin")
+      .select("id, email, created_at")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -13,12 +13,6 @@ async function getUsers(req, res) {
       return res.status(500).json({
         error: "Ett tekniskt fel uppstod. Vänligen försök igen senare.",
       });
-    }
-
-    if (!users?.length) {
-      return res
-        .status(404)
-        .json({ error: "Inga kunder hittades i databasen." });
     }
 
     return res.status(200).json(users);
