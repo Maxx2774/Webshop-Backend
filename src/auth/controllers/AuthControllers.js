@@ -6,7 +6,8 @@ async function register(req, res) {
   const { password, email } = req.body;
   const salt = 10;
 
-  if (password?.length < 6 || !email) return res.sendStatus(400);
+  if (password?.length < 6 || !email)
+    return res.status(400).json({ error: "Lösenord " });
   try {
     const hashedPassword = await bcrypt.hash(password, salt);
     const userData = {

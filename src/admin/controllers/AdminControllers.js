@@ -17,7 +17,7 @@ async function addProduct(req, res) {
     stock_quantity,
     category_id,
     image_url,
-    discount,
+    active,
   } = req.body;
 
   console.log(req.body);
@@ -32,7 +32,7 @@ async function addProduct(req, res) {
       weight,
       weight_unit,
       image_url,
-      discount,
+      active,
     };
     const { error } = await supabase.from("products").insert(productData);
     if (error) {
