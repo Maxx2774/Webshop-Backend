@@ -4,11 +4,21 @@ const jwt = require("jsonwebtoken");
 
 async function register(req, res) {
   const { password, email } = req.body;
-  const salt = 10;
 
-  if (password?.length < 6 || !email)
-    return res.status(400).json({ error: "Lösenord " });
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const validateEmail = (email) => emailRegex.test(email);
+  if (!validateEmail(email)) {
+    return res.status(400).json({ error: "Felaktig email" });
+  }
+
+  if (password?.length < 6) {
+    return res
+      .status(400)
+      .json({ error: "Lösenord måste vara minst 6 tecken" });
+  }
+
   try {
+    const salt = 10;
     const hashedPassword = await bcrypt.hash(password, salt);
     const userData = {
       password: hashedPassword,
