@@ -109,6 +109,7 @@ async function deleteProduct(req, res) {
     if (error) {
       return res.status(400).json({ error: error.message });
     }
+    return res.sendStatus(204);
   } catch (error) {
     return res.sendStatus(500);
   }
