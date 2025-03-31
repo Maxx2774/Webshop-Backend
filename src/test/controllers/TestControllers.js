@@ -169,6 +169,7 @@ async function deleteData(_, res) {
         error: productsError.message || categoriesError.message,
       });
     }
+    return res.sendStatus(204);
   } catch (error) {
     return res.sendStatus(500);
   }

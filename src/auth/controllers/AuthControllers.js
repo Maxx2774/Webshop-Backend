@@ -1,6 +1,7 @@
 const supabase = require("../../config/supabase");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { logAttempt } = require("../signin-attempts/Attempts");
 
 async function register(req, res) {
   const { password, email } = req.body;
@@ -43,9 +44,17 @@ async function register(req, res) {
 
 async function signIn(req, res) {
   const { email, password } = req.body;
-  console.log(req.headers["user-agent"]);
-  console.log(req.headers["x-forwarded-for"]);
-  console.log(req.ip);
+
+  const user_agent = req.headers["user-agent"];
+  const ip_address = req.headers["x-forwarded-for"] || req.ip;
+
+  const logPayload = {
+    email,
+    status: "failure",
+    failure_reason: "Unknown",
+    user_agent,
+    ip_address,
+  };
 
   try {
     const { data: user, error } = await supabase
@@ -54,13 +63,21 @@ async function signIn(req, res) {
       .eq("email", email)
       .single();
 
-    if (error) return res.status(401).json({ error: "Felaktiga uppgifter" });
+    if (error) {
+      logPayload.failure_reason = "Felaktiga uppgifter";
+      return res.status(401).json({ error: "Felaktiga uppgifter" });
+    }
+    logPayload.user_id = user.id;
 
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
+      logPayload.failure_reason = "Felaktiga uppgifter";
       return res.status(401).json({ error: "Felaktiga uppgifter" });
     }
+
+    logPayload.status = "success";
+    logPayload.failure_reason = null;
 
     const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "1h" });
 
@@ -76,8 +93,13 @@ async function signIn(req, res) {
       user: { id: user.id, email: user.email, admin: user.admin },
     });
   } catch (error) {
+    logPayload.failure_reason = "Server fel";
     console.error(error);
     return res.status(500).json({ error: "Server fel" });
+  } finally {
+    logAttempt(logPayload).catch((err) => {
+      console.error(err);
+    });
   }
 }
 
