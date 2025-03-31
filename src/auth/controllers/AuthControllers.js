@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 
 async function register(req, res) {
   const { password, email } = req.body;
+  console.log("test");
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const validateEmail = (email) => emailRegex.test(email);
@@ -44,6 +45,7 @@ async function signIn(req, res) {
   const { email, password } = req.body;
   console.log(req.headers["user-agent"]);
   console.log(req.headers["x-forwarded-for"]);
+  console.log(req.ip);
 
   try {
     const { data: user, error } = await supabase
