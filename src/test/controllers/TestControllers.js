@@ -1,15 +1,15 @@
 const supabase = require("../../config/supabase");
 
 const categories = [
-  { id: 1, name: "Frukt" },
-  { id: 2, name: "Grönsaker" },
-  { id: 3, name: "Mejeri" },
-  { id: 4, name: "Kött & Fisk" },
-  { id: 5, name: "Bröd & Bakverk" },
-  { id: 6, name: "Drycker" },
-  { id: 7, name: "Snacks & Godis" },
-  { id: 8, name: "Torrvaror & Skafferi" },
-  { id: 9, name: "Fryst" },
+  { id: 1, name: "Frukt", slug: "frukt" },
+  { id: 2, name: "Grönsaker", slug: "gronsaker" },
+  { id: 3, name: "Mejeri", slug: "mejeri" },
+  { id: 4, name: "Kött & Fisk", slug: "kott&fisk" },
+  { id: 5, name: "Bröd & Bakverk", slug: "brod&bakverk" },
+  { id: 6, name: "Drycker", slug: "drycker" },
+  { id: 7, name: "Snacks & Godis", slug: "snacks&godis" },
+  { id: 8, name: "Torrvaror & Skafferi", slug: "torrvaror&skafferi" },
+  { id: 9, name: "Fryst", slug: "fryst" },
 ];
 const products = [
   {
