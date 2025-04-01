@@ -105,7 +105,11 @@ async function signIn(req, res) {
 
 async function signOut(_, res) {
   try {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: none,
+    });
     return res.sendStatus(200);
   } catch (error) {
     console.error(error);
@@ -139,7 +143,11 @@ async function verifyToken(req, res) {
       .single();
 
     if (error) {
-      res.clearCookie("token");
+      res.clearCookie("token", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      });
       return res.status(401).json({ valid: false });
     }
     return res.status(200).json({
@@ -152,7 +160,11 @@ async function verifyToken(req, res) {
       },
     });
   } catch (error) {
-    res.clearCookie("token");
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
     return res.status(401).json({ valid: false });
   }
 }
