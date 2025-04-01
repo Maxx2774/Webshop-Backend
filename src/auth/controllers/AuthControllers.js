@@ -108,7 +108,7 @@ async function signOut(_, res) {
     res.clearCookie("token", {
       httpOnly: true,
       secure: true,
-      sameSite: none,
+      sameSite: "none",
     });
     return res.sendStatus(200);
   } catch (error) {
