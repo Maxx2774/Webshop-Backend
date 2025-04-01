@@ -7,7 +7,7 @@ async function register(req, res) {
   const { password, email } = req.body;
   console.log("test");
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   const validateEmail = (email) => emailRegex.test(email);
   if (!validateEmail(email)) {
     return res.status(400).json({ error: "Felaktig email" });
@@ -105,11 +105,7 @@ async function signIn(req, res) {
 
 async function signOut(_, res) {
   try {
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+    res.clearCookie("token");
     return res.sendStatus(200);
   } catch (error) {
     console.error(error);
