@@ -46,7 +46,7 @@ async function addProduct(req, res) {
         error: `Det gick inte att lägga till produkt, ${error.message}`,
       });
     }
-    return res.status(200).json({ message: `${name} har lagts till` });
+    return res.status(201).json({ message: `${name} har lagts till` });
   } catch (error) {
     return res.status(500).json({ error: "Server fel" });
   }
