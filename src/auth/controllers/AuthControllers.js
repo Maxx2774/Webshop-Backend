@@ -86,6 +86,7 @@ async function signIn(req, res) {
       secure: true,
       sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24,
+      partitioned: true,
     });
 
     return res.status(200).json({
@@ -109,6 +110,7 @@ async function signOut(_, res) {
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      partitioned: true,
     });
     return res.sendStatus(200);
   } catch (error) {
@@ -147,6 +149,7 @@ async function verifyToken(req, res) {
         httpOnly: true,
         secure: true,
         sameSite: "none",
+        partitioned: true,
       });
       return res.status(401).json({ valid: false });
     }
@@ -164,6 +167,7 @@ async function verifyToken(req, res) {
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      partitioned: true,
     });
     return res.status(401).json({ valid: false });
   }
