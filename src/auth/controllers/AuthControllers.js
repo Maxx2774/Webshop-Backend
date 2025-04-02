@@ -84,7 +84,7 @@ async function signIn(req, res) {
     await res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24,
     });
 
@@ -108,7 +108,7 @@ async function signOut(_, res) {
     res.clearCookie("token", {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
     });
     return res.sendStatus(200);
   } catch (error) {
@@ -146,7 +146,7 @@ async function verifyToken(req, res) {
       res.clearCookie("token", {
         httpOnly: true,
         secure: true,
-        sameSite: "lax",
+        sameSite: "none",
       });
       return res.status(401).json({ valid: false });
     }
@@ -163,7 +163,7 @@ async function verifyToken(req, res) {
     res.clearCookie("token", {
       httpOnly: true,
       secure: true,
-      sameSite: "lax",
+      sameSite: "none",
     });
     return res.status(401).json({ valid: false });
   }
