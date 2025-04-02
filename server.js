@@ -15,10 +15,8 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      callback(null, true); // Allow all origins
-    },
-    credentials: true,
+    origin: "https://be-webshop-2025-fe-nine.vercel.app/", 
+    credentials: true, 
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
