@@ -24,7 +24,7 @@ async function register(req, res) {
     const hashedPassword = await bcrypt.hash(password, salt);
     const userData = {
       password: hashedPassword,
-      email,
+      email: email.toLowerCase(),
     };
     const { error } = await supabase.from("users").insert(userData);
     if (error) {
@@ -60,7 +60,7 @@ async function signIn(req, res) {
     const { data: user, error } = await supabase
       .from("users")
       .select("*")
-      .eq("email", email)
+      .eq("email", email.toLowerCase())
       .single();
 
     if (error) {

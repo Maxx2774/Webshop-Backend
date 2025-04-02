@@ -48,7 +48,7 @@ async function addProduct(req, res) {
     }
     return res.status(201).json({ message: `${name} har lagts till` });
   } catch (error) {
-    return res.status(500).json({ error: "Server fel" });
+    return res.sendStatus(500);
   }
 }
 
@@ -63,7 +63,6 @@ async function updateProduct(req, res) {
     unit,
     image_url,
   } = req.body;
-  console.log(req.body);
 
   try {
     const updatedProduct = {
@@ -85,7 +84,6 @@ async function updateProduct(req, res) {
       .single();
 
     if (error) {
-      console.log(error);
       return res.status(400).json({ error: error.message });
     }
 
@@ -93,7 +91,7 @@ async function updateProduct(req, res) {
       .status(200)
       .json({ message: `${name}, (${product_id}) har uppdaterats` });
   } catch (error) {
-    return res.status(500).json({ error: "Server fel" });
+    return res.sendStatus(500);
   }
 }
 
