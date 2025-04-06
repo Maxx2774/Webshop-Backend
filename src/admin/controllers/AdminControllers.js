@@ -177,6 +177,54 @@ async function deleteCategory(req, res) {
   }
 }
 
+async function getOrders(_, res) {
+  try {
+    const { data: orders, error } = await supabase
+      .from("orders")
+      .select(
+        "id, created_at, updated_at, status, total_price, payment_status, payment_method, order_items(product_id, quantity, price), order_information(phone_number, shipping_address, billing_address, customer_notes, estimated_delivery, email) "
+      );
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: error.message });
+    }
+    if (orders.length < 1) {
+      return res.status(200).json({ message: "Det finns inga ordrar just nu" });
+    }
+
+    return res.status(200).json(orders);
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+}
+
+async function updateOrder(req, res) {
+  try {
+    const { payment_status, status, est_delivery } = req.body;
+    const id = req.params.id;
+    const { error } = await supabase
+      .from("orders")
+      .update({
+        payment_status,
+        status,
+        updated_at: new Date().toISOString(),
+        est_delivery,
+      })
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      return res
+        .status(404)
+        .json({ error: "Order not found", details: error.message });
+    }
+
+    return res.status(200).json({ message: "Order updated" });
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+}
+
 module.exports = {
   addProduct,
   updateProduct,
@@ -185,4 +233,6 @@ module.exports = {
   addCategory,
   updateCategory,
   deleteCategory,
+  getOrders,
+  updateOrder,
 };

@@ -1,45 +1,50 @@
 const supabase = require("../../config/supabase");
+const {
+  checkProductAvailability,
+  placeOrder,
+  calculateTotalOrderValue,
+} = require("./CheckoutHelpers");
 
-async function getCartItems(req, res) {
+async function order(req, res) {
+  let createdOrder = null;
   try {
-    const cart = req.query.cart;
-    if (!cart) {
-      return res.status(404).json({ error: "Inga produkter hittades" });
+    const { cart, order_info } = req.body;
+
+    const { updatedCart, unavailableProducts, error } =
+      await checkProductAvailability(cart);
+
+    if (unavailableProducts) {
+      return res.status(400).json({
+        error,
+        unavailableProducts,
+      });
     }
 
-    newCart = cart.map((item) => ({
-      productId: Number(item.productId),
-      quantity: Number(item.quantity),
-    }));
+    const { total, calcErr } = await calculateTotalOrderValue(cart);
+    if (calcErr) {
+      return res.status(400).json({ error: calcErr });
+    }
 
-    const productIds = newCart.map((item) => item.productId);
-
-    const { data: products, error } = await supabase
-      .from("products")
-      .select("*")
-      .in("id", productIds);
-    if (error)
-      return res.status(404).json({ error: "Fel vid hämtning av produkter" });
-
-    const updatedCart = newCart.map((item) => {
-      const product = products.find((p) => p.id === item.productId);
-
-      return {
-        ...item,
-        ...(product || { name: "Produkten hittades inte", quantity: 0 }),
-      };
-    });
-
-    return res.status(200).json({ updatedCart });
+    const { order: placedOrder, orderErr } = await placeOrder(
+      updatedCart,
+      order_info,
+      total
+    );
+    createdOrder = placedOrder;
+    if (orderErr) throw new Error(orderErr);
+    return res.status(201).json({ message: "Order created" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: "Server fel" });
+    await supabase
+      .from("order_items")
+      .delete()
+      .eq("order_id", createdOrder?.id);
+    await supabase
+      .from("order_information")
+      .delete()
+      .eq("order_id", createdOrder?.id);
+    await supabase.from("orders").delete().eq("id", createdOrder?.id);
+    return res.status(500).json({ error: error.message });
   }
 }
 
-async function placeOrder() {
-  try {
-  } catch (error) {}
-}
-
-module.exports = { getCartItems };
+module.exports = { order };
