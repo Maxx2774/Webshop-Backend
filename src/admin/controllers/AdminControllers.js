@@ -182,7 +182,7 @@ async function getOrders(_, res) {
     const { data: orders, error } = await supabase
       .from("orders")
       .select(
-        "id, created_at, updated_at, status, total_price, payment_status, payment_method, order_items(product_id, quantity, price), order_information(phone_number, shipping_address, billing_address, customer_notes, est_delivery, email) "
+        "id, created_at, updated_at, status, total_price, payment_status, payment_method, est_delivery, order_items(product_id, quantity, price), order_information(phone_number, shipping_address, billing_address, customer_notes, email) "
       );
     if (error) {
       console.error(error);
