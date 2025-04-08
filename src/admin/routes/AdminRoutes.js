@@ -9,6 +9,7 @@ const {
   deleteCategory,
   getOrders,
   updateOrder,
+  getOrderById,
 } = require("../controllers/AdminControllers");
 const { authenticateToken } = require("../../auth/controllers/AuthControllers");
 
@@ -49,6 +50,7 @@ router.delete(
 );
 
 router.get("/admin/orders", authenticateToken, checkAdmin, getOrders);
+router.get("/admin/orders/:id", authenticateToken, checkAdmin, getOrderById);
 router.patch("/admin/orders/:id", authenticateToken, checkAdmin, updateOrder);
 
 module.exports = router;

@@ -198,6 +198,24 @@ async function getOrders(_, res) {
   }
 }
 
+async function getOrderById(req, res) {
+  try {
+    const id = req.params.id;
+    const { data: order, error } = await supabase
+      .from("orders")
+      .select(
+        "id, created_at, updated_at, est_delivery, status, total_price, payment_status, payment_method, order_items(product_id, quantity, price), order_information(phone_number, shipping_address, billing_address, customer_notes, email)"
+      )
+      .eq("id", id)
+      .single();
+    if (error) throw error;
+
+    return res.status(200).json(order);
+  } catch (error) {
+    return res.sendStatus(500);
+  }
+}
+
 async function updateOrder(req, res) {
   try {
     const { payment_status, status, est_delivery } = req.body;
@@ -235,4 +253,5 @@ module.exports = {
   deleteCategory,
   getOrders,
   updateOrder,
+  getOrderById,
 };
