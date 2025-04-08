@@ -18,7 +18,9 @@ async function getProducts(req, res) {
     const { data: products, error } = await supaQuery;
 
     if (error) throw error;
-    if (!products?.length) return res.sendStatus(404);
+    if (!products?.length) {
+      return res.status(200).json([]);
+    }
     return res.status(200).json(products);
   } catch (error) {
     console.log(error);
@@ -52,6 +54,9 @@ async function getCategories(_, res) {
       return res
         .status(400)
         .json({ message: "Fel vid hämtning av produktkategorier", error });
+    }
+    if (!categories.length < 1) {
+      return res.status(200).json([]);
     }
     return res.status(200).json(categories);
   } catch (error) {
