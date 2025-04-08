@@ -95,7 +95,7 @@ async function placeOrder(cart, order_info, total) {
       .insert({
         order_id: order.id,
         phone_number: order_info.phone_number.trim(),
-        card_last4: order_info.card_number.trim().slice(-4),
+        card_last4: order_info.card_number?.trim().slice(-4),
         shipping_address: order_info.shipping_address,
         billing_address: order_info.billing_address,
         customer_notes: order_info.customer_notes,
@@ -122,6 +122,7 @@ async function placeOrder(cart, order_info, total) {
     }
     return { order };
   } catch (error) {
+    console.log(error);
     return { orderErr: "Fel vid orderläggning", order };
   }
 }

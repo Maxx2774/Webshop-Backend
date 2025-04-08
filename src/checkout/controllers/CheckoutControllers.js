@@ -9,6 +9,26 @@ async function order(req, res) {
   let createdOrder = null;
   try {
     const { cart, order_info } = req.body;
+    const fields = ["first_name", "last_name", "city", "zip", "street"];
+    const missingShippingAddress = fields.some(
+      (field) => !order_info?.shipping_address?.[field]
+    );
+    const missingBillingAddress = fields.some(
+      (field) => !order_info?.billing_address?.[field]
+    );
+    if (missingShippingAddress) {
+      return res.status(400).json({ error: "All leveransinformation krävs" });
+    }
+
+    if (
+      ["card", "invoice"].includes(order_info?.payment_method) &&
+      missingBillingAddress
+    ) {
+      return res.status(400).json({
+        error:
+          "Alla faktureringsuppgifter krävs vid köp med kort eller faktura",
+      });
+    }
 
     const { updatedCart, unavailableProducts, error } =
       await checkProductAvailability(cart);
