@@ -55,7 +55,7 @@ async function getCategories(_, res) {
         .status(400)
         .json({ message: "Fel vid hämtning av produktkategorier", error });
     }
-    if (!categories.length < 1) {
+    if (!categories.length) {
       return res.status(200).json([]);
     }
     return res.status(200).json(categories);
