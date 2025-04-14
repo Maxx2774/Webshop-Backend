@@ -1,6 +1,5 @@
 const supabase = require("../../config/supabase");
 
-// Categories data (kept for reference, but not inserted by addTestData)
 const categories = [
   { id: 1, name: "Frukt", slug: "frukt" },
   { id: 2, name: "Grönsaker", slug: "gronsaker" },
@@ -13,7 +12,6 @@ const categories = [
   { id: 9, name: "Fryst", slug: "fryst" },
 ];
 
-// Products data - Updated with user's provided data
 const products = [
   {
     name: "Äpple Royal Gala",
@@ -188,63 +186,43 @@ const products = [
   },
 ];
 
-// Function to add only products
 async function addTestData(_, res) {
   try {
-    // Remove the categories insertion part
-    // const { error: categoriesError } = await supabase
-    //   .from("categories")
-    //   .insert(categories);
-
-    // Only insert products
+    const { error: categoriesError } = await supabase
+      .from("categories")
+      .insert(categories);
     const { error: productsError } = await supabase
       .from("products")
       .insert(products);
 
-    // Adjust error handling and response
-    if (productsError) {
-      // Log the specific error for debugging
-      console.error("Error inserting products:", productsError);
-      return res.status(400).json({ error: productsError.message }); // Send error message
+    if (categoriesError || productsError) {
+      return res.status(400).json({ error: categoriesError || productsError });
     }
-    // Send success status if only products were inserted successfully
-    return res.status(200).json({ message: "Products added successfully" }); // Send a success message
+    return res.sendStatus(200);
   } catch (error) {
     console.log(error);
     return res.sendStatus(500);
   }
 }
 
-// Function to delete data (with caution notes)
 async function deleteData(_, res) {
   try {
-    // Be cautious with deleting products if they are referenced by order_items
-    // You might need to handle order_items deletion first or set ON DELETE behavior in the DB
     const { error: productsError } = await supabase
       .from("products")
       .delete()
       .neq("id", 0);
-
-    // Keep categories deletion if needed, but be aware of dependencies
     const { error: categoriesError } = await supabase
       .from("categories")
       .delete()
       .neq("id", 0);
 
     if (productsError || categoriesError) {
-      // Provide more specific error feedback
-      const errorMessage =
-        productsError?.message ||
-        categoriesError?.message ||
-        "Unknown error during deletion";
-      console.error("Deletion error:", errorMessage);
       return res.status(400).json({
-        error: errorMessage,
+        error: productsError.message || categoriesError.message,
       });
     }
-    return res.sendStatus(204); // No content on successful deletion
+    return res.sendStatus(204);
   } catch (error) {
-    console.error("Server error during deletion:", error); // Log server errors
     return res.sendStatus(500);
   }
 }
