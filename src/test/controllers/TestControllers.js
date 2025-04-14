@@ -150,7 +150,7 @@ const products = [
   {
     name: "GB Gräddglass Vanilj",
     price: 49,
-    weight: 0.5,
+    weight: 1,
     weight_unit: "liter",
     image_url:
       "https://assets.axfood.se/image/upload/f_auto,t_500/07310500064421_C1N1_s01", // Verifierad Willys-länk
